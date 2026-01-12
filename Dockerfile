@@ -22,4 +22,4 @@ COPY . .
 EXPOSE 10000
 
 # تشغيل التطبيق
-CMD ["gunicorn", "main:app"]
+CMD ["sh", "-c", "gunicorn main:app --bind 0.0.0.0:${PORT:-10000}"]
