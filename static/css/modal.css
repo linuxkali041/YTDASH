@@ -1,0 +1,80 @@
+/* Modal Styles - Add to admin.css */
+
+/* Modal Overlay */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+/* Modal Container */
+.modal {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.modal-body {
+    padding: var(--spacing-lg);
+    max-height: calc(90vh - 100px);
+    overflow-y: auto;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    border-top: 1px solid var(--border);
+}

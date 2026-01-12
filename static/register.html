@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - YTDash – YouTube Downloader</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="stylesheet" href="/static/css/credits.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            color: var(--text-primary);
+        }
+
+        /* Theme Toggle Position */
+        .auth-header-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .auth-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-md);
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .auth-card {
+            background: var(--bg-primary);
+            /* Fallback */
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            padding: 3rem 2.5rem;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .auth-card,
+        [data-theme="amoled"] .auth-card {
+            background: rgba(30, 30, 30, 0.7);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-logo {
+            font-size: 3rem;
+            color: var(--yt-red);
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            filter: drop-shadow(0 4px 10px rgba(255, 0, 0, 0.2));
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            line-height: 1;
+        }
+
+        /* Minimal Pro Badge */
+        .brand-badge-pro {
+            background: var(--yt-red);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 800;
+            padding: 3px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(255, 0, 0, 0.3);
+        }
+
+        .beta-tag {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            pointer-events: none;
+            transition: color 0.3s ease;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 2.75rem;
+            background: var(--bg-secondary);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            background: var(--bg-primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.1);
+        }
+
+        .form-input:focus+.input-icon {
+            color: var(--primary);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--yt-red);
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            background: var(--yt-red-dark);
+            box-shadow: 0 6px 16px rgba(255, 0, 0, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .credits-footer {
+            background: transparent;
+            border: none;
+            padding: 2rem 0;
+            margin: 0;
+        }
+
+        .credits-container {
+            background: transparent;
+            backdrop-filter: none;
+            box-shadow: none;
+            border: none;
+            padding: 0;
+        }
+
+        /* Validation Styling */
+        .form-input.success {
+            border-color: var(--success);
+        }
+
+        .form-input.error {
+            border-color: var(--error);
+        }
+
+        /* Theme Toggle Styles */
+        .theme-toggle-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .theme-toggle-btn:hover {
+            background: var(--bg-primary);
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px var(--shadow-color);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Theme Toggle -->
+    <div class="auth-header-controls">
+        <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle Theme">
+            <i class="fas fa-sun"></i>
+        </button>
+    </div>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="brand-header">
+                <div class="brand-logo">
+                    <i class="fab fa-youtube"></i>
+                </div>
+                <div class="brand-name">
+                    YTDash <span style="font-weight: 300; font-size: 1.2rem; margin-left: 5px;">YouTube
+                        Downloader</span> <span class="brand-badge-pro">PRO</span>
+                </div>
+                <div class="beta-tag">BETA v0.1</div>
+            </div>
+
+            <div class="text-center" style="margin-bottom: 2rem;">
+                <h2 style="font-size: 1.5rem; margin: 0 0 0.5rem 0; color: var(--text-primary);">Create Account</h2>
+                <p style="color: var(--text-secondary); margin: 0;">Join the pro community</p>
+            </div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <div class="input-group">
+                        <input type="text" id="username" class="form-input" required minlength="3" maxlength="50"
+                            autocomplete="username" placeholder="Choose a username">
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+                    <span id="usernameError" class="form-error hidden"
+                        style="color: var(--error); font-size: 0.8rem; margin-top: 4px;"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <div class="input-group">
+                        <input type="email" id="email" class="form-input" required autocomplete="email"
+                            placeholder="your@email.com">
+                        <i class="fas fa-envelope input-icon"></i>
+                    </div>
+                    <span id="emailError" class="form-error hidden"
+                        style="color: var(--error); font-size: 0.8rem; margin-top: 4px;"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="input-group">
+                        <input type="password" id="password" class="form-input" required minlength="8"
+                            autocomplete="new-password" placeholder="Create a strong password">
+                        <i class="fas fa-lock input-icon"></i>
+                    </div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 6px;">
+                        Min 8 chars, uppercase, lowercase & number
+                    </div>
+                    <span id="passwordError" class="form-error hidden"
+                        style="color: var(--error); font-size: 0.8rem; margin-top: 4px;"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <div class="input-group">
+                        <input type="password" id="confirmPassword" class="form-input" required
+                            autocomplete="new-password" placeholder="Confirm your password">
+                        <i class="fas fa-check-circle input-icon"></i>
+                    </div>
+                    <span id="confirmError" class="form-error hidden"
+                        style="color: var(--error); font-size: 0.8rem; margin-top: 4px;"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="registerBtn">
+                    <span>Create Account</span>
+                    <i class="fas fa-rocket"></i>
+                </button>
+            </form>
+
+            <div class="text-center" style="margin-top: 2rem;">
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                    Already have an account?
+                    <a href="/login" style="color: var(--primary); text-decoration: none; font-weight: 700;">Sign In</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="credits-footer">
+        <div class="credits-container">
+            <div class="credits-name" style="font-size: 1.1rem; margin-bottom: 0.5rem;">AhMed HaSsan</div>
+            <p class="credits-subtitle" style="margin: 0;"><span class="role-badge">Vibe Coder</span></p>
+        </div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script>
+        // Theme Management
+        const themeBtn = document.getElementById('themeToggle');
+        const themeIcon = themeBtn.querySelector('i');
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+
+            // Update icon
+            if (theme === 'light') {
+                themeIcon.className = 'fas fa-sun';
+            } else if (theme === 'dark') {
+                themeIcon.className = 'fas fa-moon';
+            } else {
+                themeIcon.className = 'fas fa-circle'; // amoled
+            }
+        }
+
+        // Initialize theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        setTheme(savedTheme);
+
+        // Toggle theme (cycle light -> dark -> amoled)
+        themeBtn.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            let next = 'light';
+            if (current === 'light') next = 'dark';
+            else if (current === 'dark') next = 'amoled';
+            setTheme(next);
+        });
+
+        // Toast function
+        function showToast(type, title, message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+
+            const icons = {
+                success: '<i class="fas fa-check-circle"></i>',
+                error: '<i class="fas fa-times-circle"></i>',
+                warning: '<i class="fas fa-exclamation-triangle"></i>'
+            };
+
+            toast.innerHTML = `
+                <div class="toast-icon">${icons[type]}</div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => toast.remove(), 5000);
+        }
+
+        // Password validation
+        function validatePassword(password) {
+            const checks = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /[0-9]/.test(password)
+            };
+
+            const allValid = Object.values(checks).every(v => v);
+            return { valid: allValid, checks };
+        }
+
+        // Show error
+        function showError(elementId, message) {
+            const errorEl = document.getElementById(elementId);
+            errorEl.textContent = message;
+            errorEl.classList.remove('hidden');
+        }
+
+        // Clear error
+        function clearError(elementId) {
+            const errorEl = document.getElementById(elementId);
+            errorEl.textContent = '';
+            errorEl.classList.add('hidden');
+        }
+
+        // Clear all errors
+        function clearAllErrors() {
+            ['usernameError', 'emailError', 'passwordError', 'confirmError'].forEach(clearError);
+        }
+
+        // Registration form submission
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const registerBtn = document.getElementById('registerBtn');
+
+            // Clear previous errors
+            clearAllErrors();
+
+            // Validate passwords match
+            if (password !== confirmPassword) {
+                showError('confirmError', 'Passwords do not match');
+                return;
+            }
+
+            // Validate password strength
+            const passwordCheck = validatePassword(password);
+            if (!passwordCheck.valid) {
+                let msg = 'Password must: ';
+                if (!passwordCheck.checks.length) msg += 'be 8+ chars, ';
+                if (!passwordCheck.checks.uppercase) msg += 'have uppercase, ';
+                if (!passwordCheck.checks.lowercase) msg += 'have lowercase, ';
+                if (!passwordCheck.checks.number) msg += 'have number';
+                showError('passwordError', msg.replace(/, $/, ''));
+                return;
+            }
+
+            // Show loading
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Store tokens
+                    localStorage.setItem('access_token', data.access_token);
+                    localStorage.setItem('refresh_token', data.refresh_token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+
+                    showToast('success', 'Welcome!', `Account created successfully!`);
+
+                    // Redirect
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1500);
+                } else {
+                    // Handle specific errors
+                    const detail = data.detail || 'Registration failed';
+
+                    if (detail.includes('Username')) {
+                        showError('usernameError', detail);
+                    } else if (detail.includes('Email')) {
+                        showError('emailError', detail);
+                    } else if (detail.includes('Password')) {
+                        showError('passwordError', detail);
+                    }
+
+                    showToast('error', 'Registration Failed', detail);
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                showToast('error', 'Error', 'Network error. Please try again.');
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = '<span>Create Account</span><i class="fas fa-rocket" style="margin-left: 8px;"></i>';
+            }
+        });
+
+        // Real-time password validation feedback
+        document.getElementById('password').addEventListener('input', (e) => {
+            const password = e.target.value;
+            const check = validatePassword(password);
+
+            if (password.length > 0) {
+                if (check.valid) {
+                    e.target.classList.add('success');
+                    e.target.classList.remove('error');
+                    e.target.style.borderColor = 'var(--success)';
+                } else {
+                    e.target.classList.add('error');
+                    e.target.classList.remove('success');
+                    e.target.style.borderColor = 'var(--error)';
+                }
+            } else {
+                e.target.style.borderColor = '';
+            }
+        });
+    </script>
+</body>
+
+</html>

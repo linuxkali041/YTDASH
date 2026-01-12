@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings – YTDash Admin</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="stylesheet" href="/static/css/admin.css?v=2">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .setting-item {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--spacing-lg);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info {
+            flex: 1;
+        }
+
+        .setting-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+            text-transform: capitalize;
+        }
+
+        .setting-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .setting-control {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            min-width: 300px;
+        }
+
+        .setting-value {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .setting-control {
+                width: 100%;
+                min-width: auto;
+                margin-top: var(--spacing-md);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="logo">
+                <span class="logo-icon"><i class="fas fa-download"></i></span>
+                <span>Admin Panel</span>
+            </div>
+
+            <nav class="admin-nav">
+                <a href="/admin" class="admin-nav-item">
+                    <span class="icon"><i class="fas fa-chart-line"></i></span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/admin/users.html" class="admin-nav-item">
+                    <span class="icon"><i class="fas fa-users"></i></span>
+                    <span>Users</span>
+                </a>
+                <a href="/admin/settings.html" class="admin-nav-item active">
+                    <span class="icon"><i class="fas fa-cog"></i></span>
+                    <span>Settings</span>
+                </a>
+                <a href="/admin/downloads.html" class="admin-nav-item">
+                    <span class="icon"><i class="fas fa-cloud-download-alt"></i></span>
+                    <span>Downloads</span>
+                </a>
+                <a href="/admin/logs.html" class="admin-nav-item">
+                    <span class="icon"><i class="fas fa-clipboard-list"></i></span>
+                    <span>Audit Logs</span>
+                </a>
+                <hr style="margin: var(--spacing-lg) 0; border-color: var(--border-color);">
+                <a href="/" class="admin-nav-item">
+                    <span class="icon"><i class="fas fa-home"></i></span>
+                    <span>Main Site</span>
+                </a>
+                <a href="#" id="logoutBtn" class="admin-nav-item">
+                    <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+                    <span>Logout</span>
+                </a>
+            </nav>
+
+            <!-- Theme Switcher -->
+            <div style="margin-top: auto; padding-top: var(--spacing-lg);">
+                <div class="theme-toggle" role="group" style="display: flex; gap: 0.5rem; justify-content: center;">
+                    <button class="theme-option active" data-theme="light" title="Light theme"
+                        style="padding: 0.5rem; border-radius: 0.5rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); cursor: pointer;">
+                        <i class="fas fa-sun"></i>
+                    </button>
+                    <button class="theme-option" data-theme="dark" title="Dark theme"
+                        style="padding: 0.5rem; border-radius: 0.5rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); cursor: pointer;">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="theme-option" data-theme="amoled" title="AMOLED"
+                        style="padding: 0.5rem; border-radius: 0.5rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); cursor: pointer;">
+                        <i class="fas fa-circle"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-content">
+            <div class="admin-header">
+                <div>
+                    <h1 class="admin-title">Application Settings</h1>
+                    <p style="color: var(--text-secondary);">Configure system preferences and behavior</p>
+                </div>
+            </div>
+
+            <div id="settingsContainer">
+                <div class="empty-state" style="text-align: center; padding: 4rem; color: var(--text-secondary);">
+                    <i class="fas fa-cog fa-spin fa-3x" style="margin-bottom: 1rem; color: var(--primary);"></i>
+                    <h3>Loading settings...</h3>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="/static/js/admin/adminAPI.js?v=2"></script>
+    <script src="/static/js/admin/adminTheme.js?v=1"></script>
+    <script>
+        function showToast(type, title, message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+            toast.innerHTML = `<div class="toast-icon">${icons[type]}</div><div class="toast-content"><div class="toast-title">${title}</div><div class="toast-message">${message}</div></div>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
+        }
+
+        function checkAuth() {
+            const token = localStorage.getItem('access_token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (!token || user.role !== 'admin') {
+                window.location.href = '/login';
+                return false;
+            }
+            return true;
+        }
+
+        async function loadSettings() {
+            try {
+                const settings = await adminAPI.getSettings();
+
+                // Group by category
+                const grouped = settings.reduce((acc, setting) => {
+                    if (!acc[setting.category]) acc[setting.category] = [];
+                    acc[setting.category].push(setting);
+                    return acc;
+                }, {});
+
+                const container = document.getElementById('settingsContainer');
+                container.innerHTML = Object.entries(grouped).map(([category, items]) => `
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fas fa-sliders-h" style="margin-right: 10px; color: var(--primary);"></i>${category.toUpperCase()}</h2>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            ${items.map(setting => `
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <div class="setting-name">${setting.key.replace(/_/g, ' ')}</div>
+                                        <div class="setting-description">${setting.description || 'No description available'}</div>
+                                    </div>
+                                    <div class="setting-control">
+                                        ${getSettingInput(setting)}
+                                        <button class="btn btn-primary" onclick="updateSetting('${setting.key}', '${setting.value_type}')">
+                                            <i class="fas fa-save"></i> Save
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error(error);
+                showToast('error', 'Error', 'Failed to load settings');
+                document.getElementById('settingsContainer').innerHTML = `
+                    <div class="card" style="text-align: center; padding: 3rem;">
+                        <i class="fas fa-exclamation-circle fa-3x" style="color: var(--error); margin-bottom: 1rem;"></i>
+                        <h3>Failed to load settings</h3>
+                        <button class="btn btn-secondary" style="margin-top: 1rem;" onclick="loadSettings()">Try Again</button>
+                    </div>
+                `;
+            }
+        }
+
+        function getSettingInput(setting) {
+            const id = `setting-${setting.key}`;
+            if (setting.value_type === 'boolean') {
+                return `
+                    <select id="${id}" class="form-select setting-value">
+                        <option value="true" ${setting.value.toString() === 'true' ? 'selected' : ''}>Enabled</option>
+                        <option value="false" ${setting.value.toString() === 'false' ? 'selected' : ''}>Disabled</option>
+                    </select>
+                `;
+            } else if (setting.value_type === 'integer') {
+                return `<input type="number" id="${id}" class="form-input setting-value" value="${setting.value}">`;
+            } else if (setting.value_type === 'text') {
+                return `<textarea id="${id}" class="form-textarea setting-value">${setting.value}</textarea>`;
+            } else {
+                return `<input type="text" id="${id}" class="form-input setting-value" value="${setting.value}">`;
+            }
+        }
+
+        async function updateSetting(key, valueType) {
+            const input = document.getElementById(`setting-${key}`);
+            let value = input.value;
+
+            // Convert types if needed, though backend handles string conversion usually
+            if (valueType === 'boolean') {
+                value = value === 'true';
+            } else if (valueType === 'integer') {
+                value = parseInt(value);
+            }
+
+            try {
+                // Determine if we need to send value as string or typed
+                // The API likely expects a string in the body or specific type depending on implementation
+                // Checking admin_routes.py would confirm, but usually JSON handles types fine.
+                // Assuming adminAPI converts or sends as JSON.
+
+                await adminAPI.updateSetting(key, value);
+                showToast('success', 'Saved', `Setting updated successfully`);
+
+                // Visual feedback on button
+                const btn = input.nextElementSibling;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Saved';
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-success');
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.add('btn-primary');
+                    btn.classList.remove('btn-success');
+                }, 2000);
+
+            } catch (error) {
+                showToast('error', 'Error', error.message || 'Failed to update setting');
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = '/login';
+        });
+
+        if (checkAuth()) {
+            loadSettings();
+        }
+    </script>
+</body>
+
+</html>

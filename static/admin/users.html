@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management – YTDash Admin</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="stylesheet" href="/static/css/admin.css?v=2">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/modal.css">
+</head>
+
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar (same as dashboard) -->
+        <aside class="admin-sidebar">
+            <div class="logo" style="margin-bottom: var(--spacing-xl);">
+                <span class="logo-icon"><i class="fab fa-youtube" style="color: var(--yt-red);"></i></span>
+                <span>YTDash <span style="font-weight: 300; font-size: 0.8em;">Admin</span></span>
+            </div>
+            <nav class="admin-nav">
+                <a href="/admin" class="admin-nav-item"><span class="icon"><i
+                            class="fas fa-chart-line"></i></span><span>Dashboard</span></a>
+                <a href="/admin/users.html" class="admin-nav-item active"><span class="icon"><i
+                            class="fas fa-users"></i></span><span>Users</span></a>
+                <a href="/admin/settings.html" class="admin-nav-item"><span class="icon"><i
+                            class="fas fa-cog"></i></span><span>Settings</span></a>
+                <a href="/admin/downloads.html" class="admin-nav-item"><span class="icon"><i
+                            class="fas fa-cloud-download-alt"></i></span><span>Downloads</span></a>
+                <a href="/admin/logs.html" class="admin-nav-item"><span class="icon"><i
+                            class="fas fa-clipboard-list"></i></span><span>Audit
+                        Logs</span></a>
+                <hr style="margin: var(--spacing-lg) 0; border-color: var(--border);">
+                <a href="/" class="admin-nav-item"><span class="icon"><i class="fas fa-home"></i></span><span>Main
+                        Site</span></a>
+                <a href="#" id="logoutBtn" class="admin-nav-item"><span class="icon"><i
+                            class="fas fa-sign-out-alt"></i></span><span>Logout</span></a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-content">
+            <div class="admin-header">
+                <h1 class="admin-title">User Management</h1>
+                <button class="btn btn-primary" onclick="showCreateUserModal()">
+                    <span>➕</span>
+                    <span>Create User</span>
+                </button>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">Role</label>
+                    <select id="roleFilter" class="form-select">
+                        <option value="">All Roles</option>
+                        <option value="admin">Admin</option>
+                        <option value="user">User</option>
+                        <option value="guest">Guest</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Status</label>
+                    <select id="statusFilter" class="form-select">
+                        <option value="">All Status</option>
+                        <option value="true">Active</option>
+                        <option value="false">Suspended</option>
+                    </select>
+                </div>
+                <button class="btn btn-secondary" style="align-self: flex-end;" onclick="loadUsers()">Apply
+                    Filters</button>
+            </div>
+
+            <!-- Users Table -->
+            <div class="card">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Storage</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr>
+                            <td colspan="7" style="text-align: center;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create User Modal -->
+    <div class="modal-overlay" id="createUserModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title"><i class="fas fa-user-plus"></i> Create New User</h2>
+                <button class="modal-close" onclick="hideCreateUserModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="createUserForm">
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <div class="input-group">
+                            <i class="fas fa-user input-icon"></i>
+                            <input type="text" id="newUsername" class="form-input with-icon"
+                                placeholder="Enter username" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <div class="input-group">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" id="newEmail" class="form-input with-icon"
+                                placeholder="user@example.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <div class="input-group">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" id="newPassword" class="form-input with-icon"
+                                placeholder="Minimum 8 characters" required minlength="8">
+                            <button type="button" class="password-toggle" onclick="togglePassword('newPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <div class="input-group">
+                            <i class="fas fa-shield-alt input-icon"></i>
+                            <select id="newRole" class="form-select with-icon">
+                                <option value="user">User - Standard Access</option>
+                                <option value="admin">Admin - Full Access</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="hideCreateUserModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Create User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Password Modal -->
+    <div class="modal-overlay" id="resetPasswordModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title"><i class="fas fa-key"></i> Reset User Password</h2>
+                <button class="modal-close" onclick="hideResetPasswordModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="resetPasswordForm">
+                    <input type="hidden" id="resetUserId">
+                    <div class="user-preview">
+                        <div class="user-avatar-placeholder">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-info">
+                            <span class="label">Resetting password for</span>
+                            <strong id="resetUsername" class="username"></strong>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <div class="input-group">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" id="resetNewPassword" class="form-input with-icon" required
+                                minlength="8" placeholder="Enter new password">
+                            <button type="button" class="password-toggle"
+                                onclick="togglePassword('resetNewPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="form-help"><i class="fas fa-info-circle"></i> Minimum 8 characters required</span>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                            onclick="hideResetPasswordModal()">Cancel</button>
+                        <button type="submit" class="btn btn-warning"><i class="fas fa-sync-alt"></i> Reset
+                            Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="/static/js/admin/adminAPI.js?v=2"></script>
+    <script src="/static/js/admin/adminTheme.js?v=1"></script>
+    <script>
+        function showToast(type, title, message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icons = { success: '✅', error: '❌' };
+            toast.innerHTML = `<div class="toast-icon">${icons[type]}</div><div class="toast-content"><div class="toast-title">${title}</div><div class="toast-message">${message}</div></div>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
+        }
+
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function checkAuth() {
+            const token = localStorage.getItem('access_token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (!token || user.role !== 'admin') {
+                window.location.href = '/login';
+                return false;
+            }
+            return true;
+        }
+
+        async function loadUsers() {
+            const tbody = document.getElementById('usersTableBody');
+            const roleFilter = document.getElementById('roleFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            try {
+                const filters = {};
+                if (roleFilter) filters.role = roleFilter;
+                if (statusFilter) filters.is_active = statusFilter;
+
+                const users = await adminAPI.getUsers(0, 100, filters);
+
+                if (users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No users found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = users.map(user => `
+                    <tr>
+                        <td><strong>${user.username}</strong></td>
+                        <td>${user.email}</td>
+                        <td><span class="badge badge-${user.role === 'admin' ? 'danger' : 'info'}"><i class="fas ${user.role === 'admin' ? 'fa-user-shield' : 'fa-user'}"></i> ${user.role}</span></td>
+                        <td><span class="badge badge-${user.is_active ? 'success' : 'danger'}">${user.is_active ? 'Active' : 'Suspended'}</span></td>
+                        <td>${(user.storage_used / 1073741824).toFixed(2)} / ${(user.storage_quota / 1073741824).toFixed(0)} GB</td>
+                        <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                        <td class="table-actions">
+                            <button class="btn btn-sm btn-outline" onclick="toggleUserStatus(${user.id}, ${!user.is_active})">${user.is_active ? 'Suspend' : 'Activate'}</button>
+                            <button class="btn btn-sm btn-outline" onclick="showResetPasswordModal(${user.id}, '${user.username}')" title="Reset Password"><i class="fas fa-key"></i></button>
+                            <button class="btn btn-sm btn-outline" onclick="switchUserRole(${user.id}, '${user.role}', '${user.username}')" title="${user.role === 'admin' ? 'Revoke Admin' : 'Make Admin'}">
+                                <i class="fas ${user.role === 'admin' ? 'fa-user-minus' : 'fa-user-shield'}"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id}, '${user.username}')"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Error loading users</td></tr>';
+                showToast('error', 'Error', 'Failed to load users');
+            }
+        }
+
+        function showCreateUserModal() {
+            document.getElementById('createUserModal').classList.add('active');
+        }
+
+        function hideCreateUserModal() {
+            document.getElementById('createUserModal').classList.remove('active');
+            document.getElementById('createUserForm').reset();
+        }
+
+        document.getElementById('createUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await adminAPI.createUser({
+                    username: document.getElementById('newUsername').value,
+                    email: document.getElementById('newEmail').value,
+                    password: document.getElementById('newPassword').value,
+                    role: document.getElementById('newRole').value
+                });
+                showToast('success', 'Success', 'User created successfully');
+                hideCreateUserModal();
+                loadUsers();
+            } catch (error) {
+                showToast('error', 'Error', error.message);
+            }
+        });
+
+        // Reset Password Logic
+        function showResetPasswordModal(userId, username) {
+            document.getElementById('resetUserId').value = userId;
+            document.getElementById('resetUsername').textContent = username;
+            document.getElementById('resetPasswordModal').classList.add('active');
+        }
+
+        function hideResetPasswordModal() {
+            document.getElementById('resetPasswordModal').classList.remove('active');
+            document.getElementById('resetPasswordForm').reset();
+        }
+
+        document.getElementById('resetPasswordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userId = document.getElementById('resetUserId').value;
+            const newPassword = document.getElementById('resetNewPassword').value;
+            const token = localStorage.getItem('access_token');
+
+            try {
+                const response = await fetch(`/admin/users/${userId}/reset-password`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ new_password: newPassword })
+                });
+
+                if (response.ok) {
+                    showToast('success', 'Success', 'Password reset successfully');
+                    hideResetPasswordModal();
+                } else {
+                    const data = await response.json();
+                    showToast('error', 'Error', data.detail || 'Failed to reset password');
+                }
+            } catch (error) {
+                showToast('error', 'Error', 'Network error');
+            }
+        });
+
+        async function toggleUserStatus(userId, activate) {
+            try {
+                await adminAPI.updateUser(userId, { is_active: activate });
+                showToast('success', 'Success', `User ${activate ? 'activated' : 'suspended'}`);
+                loadUsers();
+            } catch (error) {
+                showToast('error', 'Error', error.message);
+            }
+        }
+
+        async function deleteUser(userId, username) {
+            if (!confirm(`Delete user "${username}"? This cannot be undone.`)) return;
+            try {
+                await adminAPI.deleteUser(userId);
+                showToast('success', 'Success', 'User deleted');
+                loadUsers();
+            } catch (error) {
+                showToast('error', 'Error', error.message);
+            }
+        }
+
+        async function switchUserRole(userId, currentRole, username) {
+            const newRole = currentRole === 'admin' ? 'user' : 'admin';
+            const action = newRole === 'admin' ? 'Grant Admin privileges to' : 'Revoke Admin privileges from';
+
+            if (!confirm(`${action} "${username}"?`)) return;
+
+            try {
+                // Using updateUser API - assuming it supports role updates via JSON body
+                await adminAPI.updateUser(userId, { role: newRole });
+                showToast('success', 'Success', `User role updated to ${newRole}`);
+                loadUsers();
+            } catch (error) {
+                showToast('error', 'Error', error.message || 'Failed to update user role');
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = '/login';
+        });
+
+        if (checkAuth()) {
+            loadUsers();
+        }
+    </script>
+</body>
+
+</html>

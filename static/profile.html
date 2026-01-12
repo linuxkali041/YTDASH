@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile – YTDash</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="stylesheet" href="/static/css/credits.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header" role="banner">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon"><i class="fab fa-youtube" style="color: var(--yt-red);"></i></span>
+                    <span style="font-weight:700;">YTDash <span
+                            style="font-weight: 300; font-size: 0.8em; margin-left: 5px;">YouTube Downloader</span>
+                        <span class="brand-badge-pro">PRO</span></span>
+                </div>
+
+                <div class="flex gap-md" style="align-items: center;">
+                    <a href="/" class="btn btn-outline btn-sm">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <button id="logoutBtn" class="btn btn-sm btn-outline">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+
+                    <!-- Theme Toggle -->
+                    <div class="theme-toggle" role="group">
+                        <button class="theme-option active" data-theme="light" title="Light"><i
+                                class="fas fa-sun"></i></button>
+                        <button class="theme-option" data-theme="dark" title="Dark"><i class="fas fa-moon"></i></button>
+                        <button class="theme-option" data-theme="amoled" title="AMOLED"><i
+                                class="fas fa-circle"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main" role="main">
+        <div class="container">
+            <!-- Profile Card -->
+            <div class="card">
+                <div class="card-header text-center">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;"><i class="fas fa-user-circle"></i></div>
+                    <h1 class="card-title" id="username">Loading...</h1>
+                    <p class="card-subtitle" id="email"></p>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-3 mt-lg">
+                    <div class="card" style="text-align: center;">
+                        <h3 id="totalDownloads">-</h3>
+                        <p class="card-subtitle">Total Downloads</p>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <h3 id="storageUsed">-</h3>
+                        <p class="card-subtitle">Storage Used</p>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <h3 id="credentialCount">-</h3>
+                        <p class="card-subtitle">YouTube Accounts</p>
+                    </div>
+                </div>
+
+                <!-- Account Details -->
+                <div class="mt-lg">
+                    <h2>Account Details</h2>
+                    <div class="card mt-md">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="padding: 0.5rem; color: var(--text-secondary);">Role</td>
+                                <td style="padding: 0.5rem;"><span class="badge badge-success" id="role">-</span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem; color: var(--text-secondary);">Status</td>
+                                <td style="padding: 0.5rem;"><span class="badge badge-success" id="status">-</span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem; color: var(--text-secondary);">Storage Quota</td>
+                                <td style="padding: 0.5rem;" id="storageQuota">-</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem; color: var(--text-secondary);">Member Since</td>
+                                <td style="padding: 0.5rem;" id="createdAt">-</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="mt-lg" style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="/" class="btn btn-primary">
+                        <i class="fas fa-download"></i> Start Downloading
+                    </a>
+
+                    <button id="changePasswordBtn" class="btn btn-outline">
+                        <i class="fas fa-key"></i> Change Password
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+
+    <!-- Change Password Modal -->
+    <div id="passwordModal" class="modal-overlay" role="dialog" aria-modal="true">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title"><i class="fas fa-key"></i> Change Password</h2>
+                <button class="modal-close" id="closePasswordModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm">
+                    <div class="form-group">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" id="currentPassword" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <input type="password" id="newPassword" class="form-input" required minlength="8">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" id="confirmNewPassword" class="form-input" required minlength="8">
+                    </div>
+                    <div class="text-right">
+                        <button type="submit" class="btn btn-primary">Update Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Credits Footer -->
+    <footer class="credits-footer">
+        <div class="credits-container">
+            <h3 class="credits-title">Created By</h3>
+            <div class="credits-name" style="font-size: 1.5rem;">AhMed HaSsan</div>
+            <div class="social-links">
+                <a href="#facebook" class="social-btn facebook"><span class="social-icon"><i
+                            class="fab fa-facebook"></i></span><span>Facebook</span></a>
+                <a href="#telegram" class="social-btn telegram"><span class="social-icon"><i
+                            class="fab fa-telegram"></i></span><span>Telegram</span></a>
+                <a href="#twitter" class="social-btn twitter"><span class="social-icon"><i
+                            class="fab fa-twitter"></i></span><span>Twitter</span></a>
+                <a href="#youtube" class="social-btn youtube"><span class="social-icon"><i
+                            class="fab fa-youtube"></i></span><span>YouTube</span></a>
+            </div>
+        </div>
+    </footer>
+
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script>
+        // Check auth
+        const token = localStorage.getItem('access_token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        if (!token) {
+            window.location.href = '/login';
+        }
+
+        // Theme switcher
+        const themeButtons = document.querySelectorAll('.theme-option');
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+
+        themeButtons.forEach(btn => {
+            if (btn.dataset.theme === currentTheme) btn.classList.add('active');
+            btn.addEventListener('click', () => {
+                const theme = btn.dataset.theme;
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+                themeButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Load user info
+        document.getElementById('username').textContent = user.username || 'User';
+        document.getElementById('email').textContent = user.email || '';
+        document.getElementById('role').textContent = user.role || 'user';
+        document.getElementById('status').textContent = user.is_active ? 'Active' : 'Inactive';
+
+        // Format bytes
+        function formatBytes(bytes) {
+            if (!bytes) return '0 B';
+            const units = ['B', 'KB', 'MB', 'GB'];
+            let size = bytes;
+            let unitIndex = 0;
+            while (size >= 1024 && unitIndex < units.length - 1) {
+                size /= 1024;
+                unitIndex++;
+            }
+            return `${size.toFixed(2)} ${units[unitIndex]}`;
+        }
+
+        // Load stats
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/user/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const stats = await response.json();
+                    document.getElementById('totalDownloads').textContent = stats.total_downloads || 0;
+                    document.getElementById('storageUsed').textContent = formatBytes(stats.storage_used);
+                    document.getElementById('credentialCount').textContent = stats.credential_count || 0;
+                    document.getElementById('storageQuota').textContent = formatBytes(stats.storage_quota);
+                } else {
+                    document.getElementById('totalDownloads').textContent = '0';
+                    document.getElementById('storageUsed').textContent = '0 B';
+                    document.getElementById('credentialCount').textContent = '0';
+                }
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+
+        // Format date
+        if (user.created_at) {
+            const date = new Date(user.created_at);
+            document.getElementById('createdAt').textContent = date.toLocaleDateString();
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = '/login';
+        });
+
+        // Load stats
+        loadStats();
+
+        // Password Modal Logic
+        const passwordModal = document.getElementById('passwordModal');
+        const changePasswordBtn = document.getElementById('changePasswordBtn');
+        const closePasswordModal = document.getElementById('closePasswordModal');
+        const changePasswordForm = document.getElementById('changePasswordForm');
+
+        // Open Modal
+        changePasswordBtn.addEventListener('click', () => {
+            passwordModal.classList.add('active');
+        });
+
+        // Close Modal
+        closePasswordModal.addEventListener('click', () => {
+            passwordModal.classList.remove('active');
+            changePasswordForm.reset();
+        });
+
+        // Close on outside click
+        passwordModal.addEventListener('click', (e) => {
+            if (e.target === passwordModal) {
+                passwordModal.classList.remove('active');
+            }
+        });
+
+        // Submit form
+        changePasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+            if (newPassword !== confirmNewPassword) {
+                alert('New passwords do not match!');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/user/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        current_password: currentPassword,
+                        new_password: newPassword
+                    })
+                });
+
+                // Check content type before parsing
+                const contentType = response.headers.get("content-type");
+                let data;
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    data = await response.json();
+                } else {
+                    const text = await response.text();
+                    console.error('Non-JSON response:', text);
+                    data = { detail: `Server error: ${response.status} ${response.statusText}` };
+                }
+
+                if (response.ok) {
+                    alert('✅ Password updated successfully!');
+                    passwordModal.style.display = 'none';
+                    changePasswordForm.reset();
+                } else {
+                    console.error('Password change failed:', data);
+                    alert('❌ ' + (data.detail || 'Failed to update password'));
+                }
+            } catch (error) {
+                console.error('Error changing password:', error);
+                alert('Network error. Please try again. Check console for details.');
+            }
+        });
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>

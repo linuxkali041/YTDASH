@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Download YouTube videos with advanced options. Supports multiple quality settings, audio extraction, and authenticated downloads.">
+    <meta name="keywords" content="youtube, downloader, video, audio, converter">
+    <meta name="author" content="YouTube Downloader">
+
+    <title>YTDash – YouTube Downloader</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📥</text></svg>">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="stylesheet" href="/static/css/credits.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header" role="banner">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon" aria-hidden="true"><i class="fab fa-youtube"
+                            style="color: var(--yt-red);"></i></span>
+                    <span style="font-weight:800; font-size: 1.5rem; letter-spacing: -1px;">YTDash <span
+                            class="brand-badge-pro">PRO</span></span>
+                    <span
+                        style="display:block; font-size: 0.7rem; color: var(--text-tertiary); margin-left: 2.8rem; margin-top: -5px; letter-spacing: 1px;">BETA
+                        v0.1</span>
+                </div>
+
+                <div class="flex gap-md" style="align-items: center;">
+                    <!-- Auth Status -->
+                    <div id="authStatus" class="hidden">
+                        <button id="logoutBtn" class="btn btn-sm btn-outline" type="button">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+
+                    <!-- Theme Toggle -->
+                    <div class="theme-toggle" role="group" aria-label="Theme selection">
+                        <button class="theme-option active" data-theme="light" aria-label="Light theme"
+                            title="Light theme"><i class="fas fa-sun"></i></button>
+                        <button class="theme-option" data-theme="dark" aria-label="Dark theme" title="Dark theme"><i
+                                class="fas fa-moon"></i></button>
+                        <button class="theme-option" data-theme="amoled" aria-label="AMOLED black theme"
+                            title="AMOLED black"><i class="fas fa-circle"></i></button>
+                    </div>
+
+                    <!-- Settings Button -->
+                    <button id="settingsBtn" class="btn btn-icon btn-secondary" aria-label="Settings" title="Settings">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main" role="main">
+        <div class="container">
+            <!-- Download Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="card-title">Download YouTube Videos</h1>
+                    <p class="card-subtitle">Enter a YouTube URL to download videos or extract audio</p>
+                </div>
+
+                <!-- Download Form -->
+                <form id="downloadForm" role="form">
+                    <!-- URL Input -->
+                    <div class="form-group">
+                        <label for="urlInput" class="form-label">YouTube URL</label>
+                        <input type="url" id="urlInput" class="form-input"
+                            placeholder="https://www.youtube.com/watch?v=..." required aria-required="true"
+                            aria-describedby="urlHelp">
+                        <span id="urlHelp" class="form-help">Paste a YouTube video URL to get started</span>
+                        <span id="urlError" class="form-error hidden" role="alert"></span>
+                    </div>
+
+                    <!-- Get Info Button -->
+                    <button type="button" id="getInfoBtn" class="btn btn-outline btn-lg mb-lg">
+                        <span><i class="fas fa-search"></i></span>
+                        <span>Get Video Info</span>
+                    </button>
+
+                    <!-- Video Info Display -->
+                    <div id="videoInfo" class="hidden mb-lg">
+                        <div class="card" style="background-color: var(--bg-tertiary);">
+                            <div class="flex gap-lg" style="align-items: flex-start;">
+                                <img id="videoThumbnail" src="" alt="Video thumbnail"
+                                    style="width: 180px; border-radius: var(--radius-md);" class="hidden">
+                                <div style="flex: 1;">
+                                    <h3 id="videoTitle" class="mb-sm"></h3>
+                                    <p id="videoMeta" class="card-subtitle mb-sm"></p>
+                                    <p id="videoDescription" class="card-subtitle"
+                                        style="max-height: 100px; overflow-y: auto;"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Format Selection -->
+                    <div id="formatSelection" class="hidden">
+                        <div class="grid grid-2 mb-lg">
+                            <!-- Download Type -->
+                            <div class="form-group">
+                                <label for="formatType" class="form-label">Download Type</label>
+                                <select id="formatType" class="form-select">
+                                    <option value="video">Video (with audio)</option>
+                                    <option value="audio">Audio only</option>
+                                </select>
+                            </div>
+
+                            <!-- Quality -->
+                            <div class="form-group" id="qualityGroup">
+                                <label for="quality" class="form-label">Quality</label>
+                                <select id="quality" class="form-select">
+                                    <option value="best">Best Quality</option>
+                                    <option value="2160p">2160p (4K)</option>
+                                    <option value="1440p">1440p (2K)</option>
+                                    <option value="1080p">1080p (Full HD)</option>
+                                    <option value="720p">720p (HD)</option>
+                                    <option value="480p">480p</option>
+                                    <option value="360p">360p</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Download Button -->
+                        <button type="submit" id="downloadBtn" class="btn btn-primary btn-lg">
+                            <span><i class="fas fa-download"></i></span>
+                            <span>Download Now</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Progress Section -->
+                <div id="progressSection" class="hidden mt-lg">
+                    <h3 class="mb-md">Download Progress</h3>
+                    <div class="progress-container">
+                        <div class="progress-bar-wrapper">
+                            <div id="progressBar" class="progress-bar" style="width: 0%;" role="progressbar"
+                                aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span id="progressPercent">0%</span>
+                            <span id="progressSpeed">-</span>
+                            <span id="progressETA">-</span>
+                        </div>
+                    </div>
+                    <p id="progressStatus" class="text-center mt-md" style="color: var(--text-secondary);"></p>
+                </div>
+            </div>
+
+            <!-- Auth Prompt Card (shown if not authenticated) -->
+            <div id="authPromptCard" class="card mt-lg hidden">
+                <div class="card-header text-center">
+                    <h2 class="card-title"><i class="fas fa-lock"></i> Optional: Sign in for Better Access</h2>
+                    <p class="card-subtitle">Authenticate with Google to download age-restricted and private videos</p>
+                </div>
+                <div class="text-center">
+                    <button id="loginBtn" class="btn btn-primary btn-lg">
+                        <span><i class="fab fa-google"></i></span>
+                        <span>Sign in with Google</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="grid grid-2 mt-lg">
+                <div class="card">
+                    <h3><i class="fas fa-bolt"></i> Fast Downloads</h3>
+                    <p class="card-subtitle">Download videos quickly with resume support and retry logic</p>
+                </div>
+                <div class="card">
+                    <h3><i class="fas fa-music"></i> Audio Extraction</h3>
+                    <p class="card-subtitle">Extract audio tracks in high quality formats</p>
+                </div>
+                <div class="card">
+                    <h3><i class="fas fa-file-video"></i> Multiple Formats</h3>
+                    <p class="card-subtitle">Choose from various quality options and codecs</p>
+                </div>
+                <div class="card">
+                    <h3><i class="fas fa-shield-alt"></i> Secure</h3>
+                    <p class="card-subtitle">Your credentials are encrypted and never stored</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Credits Footer -->
+    <footer class="credits-footer" role="contentinfo">
+        <div class="credits-container">
+            <h3 class="credits-title">Created By</h3>
+            <p class="credits-subtitle"><span class="role-badge">Vibe Coder</span></p>
+
+            <div class="credits-name">AhMed HaSsan</div>
+
+            <div class="social-links">
+                <a href="#facebook" class="social-btn facebook" aria-label="Visit Facebook page">
+                    <span class="social-icon"><i class="fab fa-facebook"></i></span>
+                    <span>Facebook</span>
+                </a>
+                <a href="#telegram" class="social-btn telegram" aria-label="Visit Telegram channel">
+                    <span class="social-icon"><i class="fab fa-telegram"></i></span>
+                    <span>Telegram</span>
+                </a>
+                <a href="#twitter" class="social-btn twitter" aria-label="Visit Twitter profile">
+                    <span class="social-icon"><i class="fab fa-twitter"></i></span>
+                    <span>Twitter</span>
+                </a>
+                <a href="#youtube" class="social-btn youtube" aria-label="Visit YouTube channel">
+                    <span class="social-icon"><i class="fab fa-youtube"></i></span>
+                    <span>YouTube</span>
+                </a>
+            </div>
+
+            <div class="credits-divider"></div>
+
+            <p class="credits-copyright">
+                © <span class="credits-year">2026</span> YouTube Video Downloader
+                <br>
+                Made with <span class="credits-heart"><i class="fas fa-heart"></i></span> for the community
+                <br>
+                <span style="font-size: 0.75rem; margin-top: 0.5rem; display: block;">
+                    For educational purposes only. Please respect copyright laws and YouTube's ToS.
+                </span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal-overlay" role="dialog" aria-labelledby="settingsModalTitle" aria-modal="true">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="settingsModalTitle" class="modal-title"><i class="fas fa-cog"></i> Settings</h2>
+                <button class="modal-close" aria-label="Close settings" type="button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Theme</label>
+                    <div class="theme-toggle">
+                        <button class="theme-option" data-theme="light"><i class="fas fa-sun"></i> Light</button>
+                        <button class="theme-option" data-theme="dark"><i class="fas fa-moon"></i> Dark</button>
+                        <button class="theme-option" data-theme="amoled"><i class="fas fa-circle"></i> AMOLED</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Default Quality</label>
+                    <select id="defaultQuality" class="form-select">
+                        <option value="best">Best Quality</option>
+                        <option value="1080p">1080p</option>
+                        <option value="720p">720p</option>
+                        <option value="480p">480p</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Download Location</label>
+                    <input type="text" class="form-input" value="Your Computer (Downloads Folder)" readonly>
+                    <span class="form-help">Videos download directly to your computer, not the server</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container" role="status" aria-live="polite"></div>
+
+    <!-- Scripts -->
+    <script src="/static/js/main-fix.js?v=3"></script>
+    <script src="/static/js/app.js?v=3"></script>
+    <script src="/static/js/api.js?v=3"></script>
+    <script src="/static/js/ui.js?v=3"></script>
+    <!-- <script src="/static/js/auth.js"></script> -->
+    <!-- <script src="/static/js/download.js"></script> -->
+</body>
+
+</html>
