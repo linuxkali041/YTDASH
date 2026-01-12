@@ -17,6 +17,28 @@ from utils.logging_config import get_logger
 logger = get_logger(__name__)
 
 router = APIRouter(prefix="/admin", tags=["admin"])
+@router.post("/__bootstrap_admin", include_in_schema=False)
+def bootstrap_admin(
+    email: EmailStr = Query(..., description="Email of the user to promote"),
+    db: Session = Depends(get_db),
+):
+    user = db.query(User).filter(func.lower(User.email) == func.lower(email)).first()
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
+
+    user.role = UserRole.ADMIN  # أو user.is_admin = True حسب الموديل
+    db.commit()
+
+    logger.warning(f"BOOTSTRAP: Promoted {user.email} to ADMIN")
+
+    return {
+        "status": "ok",
+        "message": f"{user.email} is now admin",
+    }
 
 
 # Request/Response Models
